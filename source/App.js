@@ -3,15 +3,36 @@ enyo.kind({
 	kind: "FittableRows",
 	fit: true,
 	components:[
-		{kind: "onyx.Toolbar", content: "Hello World"},
-		{kind: "enyo.Scroller", fit: true, components: [
-			{name: "main", classes: "nice-padding", allowHtml: true}
-		]},
-		{kind: "onyx.Toolbar", components: [
-			{kind: "onyx.Button", content: "Tap me", ontap: "helloWorldTap"}
+		{kind: "onyx.Toolbar", content: "Pictures"},
+		{kind: "enyo.FittableColumns", fit: true, components: [
+      {kind: "List", fit: true, count: 100, onSetupItem: "setupItem", components: [
+        {classes: "item", ontap: "itemTap", components: [
+          {name: "name"}
+        ]}
+      ]}
 		]}
 	],
-	helloWorldTap: function(inSender, inEvent) {
-		this.$.main.addContent("The button was tapped.<br/>");
-	}
+  rendered: function() {
+    remoteStorage.claimAccess('pictures', 'r');
+    remoteStorage.pictures.init();
+    remoteStorage.displayWidget();
+    var self = this;
+    remoteStorage.on('ready', function(){
+      remoteStorage.pictures.listPublicAlbums().then(function(albums){
+        self.albums = albums;
+
+        self.$.list.setCount(self.albums.length);
+        self.$.list.reset();
+      });
+    });
+  },
+  albums: undefined,
+  setupItem: function(inSender, inEvent) {
+    var albumName = this.albums[inEvent.index];
+    this.$.name.setContent(albumName);
+  },
+  itemTap: function(inSender, inEvent) {
+    var albumName = this.$.name.content;
+    // display albumName
+  }
 });
