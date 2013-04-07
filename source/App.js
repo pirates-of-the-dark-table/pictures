@@ -5,14 +5,17 @@ enyo.kind({
 	components:[
 		{kind: "onyx.Toolbar", content: "Pictures"},
 		{kind: "enyo.FittableColumns", fit: true, components: [
-      {kind: "List", fit: true, count: 100, onSetupItem: "setupItem", components: [
+      {kind: "List", count: 0, onSetupItem: "setupItem", classes: "list", components: [
         {classes: "item", ontap: "itemTap", components: [
           {name: "name"}
         ]}
-      ]}
-		]}
-	],
+      ]},
+      {kind: "ImageCarousel", fit: true, images: [''], defaultScale:"auto"},
+    ]}
+  ],
   rendered: function() {
+    this.inherited(arguments);
+
     remoteStorage.claimAccess('pictures', 'r');
     remoteStorage.pictures.init();
     remoteStorage.displayWidget();
@@ -33,6 +36,11 @@ enyo.kind({
   },
   itemTap: function(inSender, inEvent) {
     var albumName = this.$.name.content;
-    // display albumName
+    var album = remoteStorage.pictures.openPublicAlbum(albumName);
+    self = this;
+    album.list().then(function(itemNames){
+      var pictureURLs = itemNames.map(album.getPictureURL);
+      self.$.imageCarousel.setImages(pictureURLs);
+    });
   }
 });
