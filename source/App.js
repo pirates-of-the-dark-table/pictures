@@ -10,7 +10,17 @@ enyo.kind({
           {name: "name"}
         ]}
       ]},
-      {kind: "ImageCarousel", fit: true, images: [''], defaultScale:"auto"},
+      {
+        kind: "FittableRows",
+        fit: true,
+        components: [
+          {name: "carousel", kind: "ImageCarousel", fit: true, images: [''], defaultScale:"auto"},
+          {kind: "onyx.Toolbar", style:"text-align:center;", components: [
+            {kind: "onyx.Button", content:"&larr;", allowHtml: true, ontap:"previous"},
+            {kind: "onyx.Button", content:"&rarr;", allowHtml: true, ontap:"next"}
+          ]}
+        ]
+      }
     ]}
   ],
   rendered: function() {
@@ -40,7 +50,13 @@ enyo.kind({
     self = this;
     album.list().then(function(itemNames){
       var pictureURLs = itemNames.map(album.getPictureURL);
-      self.$.imageCarousel.setImages(pictureURLs);
+      self.$.carousel.setImages(pictureURLs);
     });
+  },
+  previous: function(inSender, inEvent) {
+    this.$.carousel.previous();
+  },
+  next: function(inSender, inEvent) {
+    this.$.carousel.next();
   }
 });
