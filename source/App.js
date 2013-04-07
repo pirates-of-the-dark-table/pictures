@@ -23,6 +23,7 @@ enyo.kind({
       }
     ]}
   ],
+
   rendered: function() {
     this.inherited(arguments);
 
@@ -39,13 +40,16 @@ enyo.kind({
       });
     });
   },
+
   albums: undefined,
+
   setupItem: function(inSender, inEvent) {
     var albumName = this.albums[inEvent.index];
     this.$.name.setContent(albumName);
   },
+
   itemTap: function(inSender, inEvent) {
-    var albumName = this.$.name.content;
+    var albumName = this.albums[inEvent.index];
     var album = remoteStorage.pictures.openPublicAlbum(albumName);
     self = this;
     album.list().then(function(itemNames){
@@ -53,9 +57,11 @@ enyo.kind({
       self.$.carousel.setImages(pictureURLs);
     });
   },
+
   previous: function(inSender, inEvent) {
     this.$.carousel.previous();
   },
+
   next: function(inSender, inEvent) {
     this.$.carousel.next();
   }
